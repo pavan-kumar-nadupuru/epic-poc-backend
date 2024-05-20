@@ -1,5 +1,5 @@
 import InitiateAuth from "./InitiateAuth";
-import SearchPatient from "./SearchPatient";
+import EpicUserFlow from "./EpicUserFlow";
 import useAccessToken from "../hooks/useAccessToken";
 
 const MainContent: React.FC = () => {
@@ -7,8 +7,7 @@ const MainContent: React.FC = () => {
 
   return (
     <div className="app-container d-flex justify-content-center align-items-center">
-      {!accessToken && <InitiateAuth />}
-      {accessToken && <SearchPatient accessToken={accessToken} />}
+      {!accessToken ? <InitiateAuth /> : <EpicUserFlow accessToken={accessToken}/>}
     </div>
   );
 };

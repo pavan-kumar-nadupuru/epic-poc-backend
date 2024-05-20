@@ -22,7 +22,7 @@ interface UserDetails {
     patientEpicId: string;
 }
 
-const SearchPatient: React.FC<SearchPatientProps> = ({
+const EpicUserFlow: React.FC<SearchPatientProps> = ({
     accessToken
 }) => {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
@@ -159,4 +159,4 @@ const SearchPatient: React.FC<SearchPatientProps> = ({
     );
 };
 
-export default SearchPatient;
+export default EpicUserFlow;
