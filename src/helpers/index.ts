@@ -1,6 +1,7 @@
 import axios from "axios";
 
 export const getVitals = async (patientId: string, accessToken: string, setVitals: any) => {
+    setVitals(null);
     let config = {
         method: 'get',
         maxBodyLength: Infinity,
@@ -54,10 +55,10 @@ export const getVitals = async (patientId: string, accessToken: string, setVital
         }
     });
     setVitals(formattedVitals);
-    return vitals.data;
 };
 
 export const getReports = async (patientId: string, accessToken: string, setReports: any) => {
+    setReports(null);
     let config = {
         method: 'get',
         maxBodyLength: Infinity,
@@ -84,7 +85,6 @@ export const getReports = async (patientId: string, accessToken: string, setRepo
     });
 
     setReports(formattedReports);
-    return formattedReports;
 };
 
 export const searchUser = async (familyName: string, birthdate: string, accessToken: string) => {
@@ -100,3 +100,33 @@ export const searchUser = async (familyName: string, birthdate: string, accessTo
     const patientInfo = await axios.request(config);
     return patientInfo.data;
 };
+
+export const getPatientAllergies = async (patientId: string, accessToken: string, setAllergies: any) => {
+    setAllergies(null);
+    let config = {
+      method: 'get',
+      maxBodyLength: Infinity,
+      url: `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/AllergyIntolerance?patient=${patientId}`,
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+      }
+    };
+  
+    const allergies = await axios.request(config);
+    console.log(allergies.data);
+  
+    const formattedAllergies = allergies.data.entry.map((allergy: any) => {
+      return {
+        id: allergy.resource.id,
+        clinicalStatus: allergy.resource.clinicalStatus.coding[0].display,
+        verificationStatus: allergy.resource.verificationStatus.coding[0].display,
+        category: allergy.resource.category.join(', '),
+        criticality: allergy.resource.criticality,
+        code: allergy.resource.code.text,
+        onsetPeriod: JSON.stringify(allergy.resource.onsetPeriod),
+        reaction: allergy.resource.reaction.map((reaction: any) => reaction.manifestation[0].text).join(', '),
+      };
+    });
+  
+    setAllergies(formattedAllergies);
+  };
