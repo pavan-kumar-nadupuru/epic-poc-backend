@@ -1,22 +1,16 @@
-import { useEffect, useState } from "react";
 import InitiateAuth from "./InitiateAuth";
 import SearchPatient from "./SearchPatient";
+import useAccessToken from "../hooks/useAccessToken";
 
 const MainContent: React.FC = () => {
-    const [accessToken, setAccessToken] = useState<string>("");
+  const accessToken = useAccessToken();
 
-    useEffect(() => {
-        const urlParam = new URLSearchParams(window.location.search);
-        setAccessToken(urlParam.get("accesstoken") || "");
-    });
-
-    return (
-        <div className="app-container d-flex justify-content-center align-items-center">
-            {!accessToken && <InitiateAuth />}
-            {accessToken && <SearchPatient accessToken={accessToken} />}
-        </div>
-    );
-}
-
+  return (
+    <div className="app-container d-flex justify-content-center align-items-center">
+      {!accessToken && <InitiateAuth />}
+      {accessToken && <SearchPatient accessToken={accessToken} />}
+    </div>
+  );
+};
 
 export default MainContent;
