@@ -11,13 +11,7 @@ function App() {
       <Routes >
         <Route path="/" Component={MainContent} />
         <Route path="/callback" Component={AuthComponent} />
-
       </Routes >
-
-      {/* <div className="app-container d-flex justify-content-center align-items-center"> */}
-      {/* <InitiateAuth /> */}
-      {/* <SearchPatient /> */}
-      {/* </div> */}
     </Router>
   );
 }

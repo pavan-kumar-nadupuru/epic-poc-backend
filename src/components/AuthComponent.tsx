@@ -3,8 +3,6 @@ import querystring from "querystring";
 import axios from "axios";
 import { Buffer } from "buffer";
 
-
-
 const authUrl: string = 'https://fhir.epic.com/interconnect-fhir-oauth/oauth2/authorize';
 const clientId: string = 'b1269f3e-4fa4-4acd-aedf-9ebd8014c393';
 const redirectUrl: string = 'http://localhost:3000/callback';

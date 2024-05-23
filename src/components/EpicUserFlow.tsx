@@ -62,7 +62,7 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
     };
 
     return (
-        <div className="user-search-container container overflow-auto">
+        <div className="container overflow-auto">
             <h2 className="mb-4">User Search</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="search-form">
                 <div className="row mb-3">
