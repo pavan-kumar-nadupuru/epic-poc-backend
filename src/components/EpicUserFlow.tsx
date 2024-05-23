@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { getReports, getVitals, searchUser, getPatientAllergies } from '../helpers';
-import ReportsModal from "./ui/ReportsModal";
+import { getReports, getVitals, searchUser, getPatientAllergies, getPatientMedicalHistory } from '../helpers';
+import ReportsModal from "./ui/modals/ReportsModal";
 import UserDetailsTable from "./ui/UserDetailsTable";
-import VitalsModal from "./ui/VitalsModal";
-import AllergiesModal from "./ui/AllergiesModal";
+import VitalsModal from "./ui/modals/VitalsModal";
+import AllergiesModal from "./ui/modals/AllergiesModal";
+import MedicalHistoryModal from "./ui/modals/MedicalHistoryModal";
 
 interface FormData {
     familyName: string;
@@ -27,33 +28,44 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
 }) => {
     const { register, handleSubmit, formState: { errors } } = useForm<FormData>();
     const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+    const [userSearchError, setUserSearchError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [vitals, setVitals] = useState<any>(null);
     const [reports, setReports] = useState<any>(null);
     const [allergies, setAllergies] = useState<any>(null);
+    const [medicalHistory, setMedicalHistory] = useState<any>(null);
 
     const [showVitalsModal, setShowVitalsModal] = useState(false);
     const [showReportsModal, setShowReportsModal] = useState(false);
     const [showAllergiesModal, setShowAllergiesModal] = useState(false);
+    const [showMedicalHistoryModal, setShowMedicalHistoryModal] = useState(false);
 
     const lazy = localStorage.getItem('lazy');
 
     const onSubmit = async (data: FormData) => {
         setUserDetails(null);
+        setUserSearchError(null);
         setLoading(true);
         try {
             const { familyName, birthdate } = data;
             const patient = await searchUser(familyName, birthdate, accessToken);
-            const name = patient.entry[0].resource.name[0].text;
-            const gender = patient.entry[0].resource.gender;
-            const birthDate = patient.entry[0].resource.birthDate;
-            const patientEpicId = patient.entry[0].resource.id;
-            setUserDetails({
-                name,
-                gender,
-                birthDate,
-                patientEpicId
-            })
+            if (!patient) {
+                setUserDetails(null);
+                setUserSearchError("No patient found with the given details");
+            } else {
+
+                const name = patient?.name;
+                const gender = patient?.gender;
+                const birthDate = patient?.birthDate;
+                const patientEpicId = patient.id;
+                setUserDetails({
+                    name,
+                    gender,
+                    birthDate,
+                    patientEpicId
+                });
+                setUserSearchError(null);
+            }
         } catch (error: any) {
             console.error(error.message);
         } finally {
@@ -137,6 +149,15 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
                         >
                             View Allergies
                         </button>
+                        <button
+                            className="mb-3 btn btn-primary"
+                            onClick={() => {
+                                getPatientMedicalHistory(userDetails.patientEpicId, accessToken, setMedicalHistory);
+                                setShowMedicalHistoryModal(true);
+                            }}
+                        >
+                            Show Medical History
+                        </button>
                     </div>
                     {<VitalsModal
                         show={showVitalsModal}
@@ -153,6 +174,16 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
                         onHide={() => setShowAllergiesModal(false)}
                         allergies={allergies}
                     />}
+                    {<MedicalHistoryModal
+                        show={showMedicalHistoryModal}
+                        onHide={() => setShowMedicalHistoryModal(false)}
+                        medicalHistory={medicalHistory}
+                    />}
+                </div>
+            )}
+            {userSearchError && (
+                <div className="alert alert-danger mt-4" role="alert">
+                    {userSearchError}
                 </div>
             )}
         </div>
