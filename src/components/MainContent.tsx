@@ -7,7 +7,7 @@ const MainContent: React.FC = () => {
 
   return (
     <div className="app-container d-flex justify-content-center align-items-center">
-      {!accessToken ? <InitiateAuth /> : <EpicUserFlow accessToken={accessToken}/>}
+      {!accessToken ? <InitiateAuth /> : <EpicUserFlow accessToken={accessToken} />}
     </div>
   );
 };

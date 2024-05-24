@@ -5,7 +5,7 @@ const useAccessToken = (): string => {
   const [accessToken, setAccessToken] = useState<string>("");
 
   useEffect(() => {
-  const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken");
     const expiresAt = localStorage.getItem("expiresIn");
     const createdAt = localStorage.getItem("createdAt");
     if (token && expiresAt && createdAt) {
@@ -13,7 +13,7 @@ const useAccessToken = (): string => {
       const createdAtDate = new Date(createdAt);
       const now = new Date();
       const diff = now.getTime() - createdAtDate.getTime();
-      if (diff > (expiresIn * 1000)) {
+      if (diff > expiresIn * 1000) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("expiresIn");
         localStorage.removeItem("createdAt");

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { getReports, getVitals, searchUser, getPatientAllergies, getPatientMedicalHistory } from '../helpers';
+import { getReports, getVitals, searchUser, getPatientAllergies, getPatientMedicalHistory, getPatientAppointments } from '../helpers';
 import ReportsModal from "./ui/modals/ReportsModal";
 import UserDetailsTable from "./ui/UserDetailsTable";
 import VitalsModal from "./ui/modals/VitalsModal";
 import AllergiesModal from "./ui/modals/AllergiesModal";
 import MedicalHistoryModal from "./ui/modals/MedicalHistoryModal";
+import AppointmentsModal from "./ui/modals/AppointmentsModal";
 
 interface FormData {
     familyName: string;
@@ -34,11 +35,13 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
     const [reports, setReports] = useState<any>(null);
     const [allergies, setAllergies] = useState<any>(null);
     const [medicalHistory, setMedicalHistory] = useState<any>(null);
+    const [patientAppointments, setPatientAppointments] = useState<any>(null);
 
     const [showVitalsModal, setShowVitalsModal] = useState(false);
     const [showReportsModal, setShowReportsModal] = useState(false);
     const [showAllergiesModal, setShowAllergiesModal] = useState(false);
     const [showMedicalHistoryModal, setShowMedicalHistoryModal] = useState(false);
+    const [showPatientAppointments, setShowPatientAppointments] = useState(false);
 
     const lazy = localStorage.getItem('lazy');
 
@@ -84,8 +87,8 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
                                 type="text"
                                 className={`form-control ${errors.familyName ? "is-invalid" : ""}`}
                                 id="familyName"
-                                placeholder="Last Name (McGinnis)"
-                                {...(lazy ? { value: 'McGinnis' } : {})}
+                                placeholder="Last Name (Icu)"
+                                {...(lazy ? { value: 'Icu' } : {})}
                                 {...register("familyName", { required: true })}
                             />
                             <label htmlFor="familyName">Last (Family) Name</label>
@@ -99,10 +102,10 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
                                 className={`form-control ${errors.birthdate ? "is-invalid" : ""}`}
                                 id="birthdate"
                                 placeholder="Birthdate"
-                                {...(lazy ? { value: new Date('1952-05-24').toISOString().split('T')[0] } : {})}
+                                {...(lazy ? { value: new Date('1955-02-09').toISOString().split('T')[0] } : {})}
                                 {...register("birthdate", { required: true })}
                             />
-                            <label htmlFor="birthdate">Birthdate (1952-05-24)</label>
+                            <label htmlFor="birthdate">Birthdate (1955-02-09)</label>
                             {errors.birthdate && <div className="invalid-feedback">Birthdate is required</div>}
                         </div>
                     </div>
@@ -158,6 +161,15 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
                         >
                             Show Medical History
                         </button>
+                        <button
+                            className="mb-3 btn btn-primary"
+                            onClick={() => {
+                                getPatientAppointments(userDetails.patientEpicId, accessToken, setPatientAppointments);
+                                setShowPatientAppointments(true);
+                            }}
+                        >
+                            Show Patient Appointments
+                        </button>
                     </div>
                     {<VitalsModal
                         show={showVitalsModal}
@@ -178,6 +190,11 @@ const EpicUserFlow: React.FC<SearchPatientProps> = ({
                         show={showMedicalHistoryModal}
                         onHide={() => setShowMedicalHistoryModal(false)}
                         medicalHistory={medicalHistory}
+                    />}
+                    {<AppointmentsModal
+                        show={showPatientAppointments}
+                        onHide={() => setShowPatientAppointments(false)}
+                        appointments={patientAppointments}
                     />}
                 </div>
             )}

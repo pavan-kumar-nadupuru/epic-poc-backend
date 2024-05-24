@@ -1,19 +1,19 @@
 export function formatPatientInfo(patientData: any) {
   return {
     id: patientData.resource?.id,
-    name: patientData.resource?.name[0]?.text || "No Name Provided",
+    name: patientData.resource?.name?.[0]?.text || "No Name Provided",
     gender: patientData.resource?.gender,
     birthDate: patientData.resource?.birthDate,
-    address: patientData.resource?.address[0]?.text || "No Address Provided"
+    address: patientData.resource?.address?.[0]?.text || "No Address Provided",
   };
 }
 
 export function formatVitals(vital: any) {
-  const vitalType = vital.resource?.code?.coding[0]?.code;
+  const vitalType = vital.resource?.code?.coding?.[0]?.code;
   switch (vitalType) {
     case "5": // Blood pressure
       return {
-        Type: vital.resource?.code?.coding[0]?.display,
+        Type: vital.resource?.code?.coding?.[0]?.display,
         Date: vital.resource?.effectiveDateTime,
         systolic: vital.resource?.component?.[0]?.valueQuantity?.value || null,
         diastolic: vital.resource?.component?.[1]?.valueQuantity?.value || null,
@@ -22,14 +22,14 @@ export function formatVitals(vital: any) {
       };
     case "8": // Heart rate
       return {
-        Type: vital.resource?.code?.coding[0]?.display,
+        Type: vital.resource?.code?.coding?.[0]?.display,
         Date: vital.resource?.effectiveDateTime,
         heartRate: vital.resource?.valueQuantity?.value,
         temperature: null,
       };
     case "6": // Body temperature
       return {
-        Type: vital.resource?.code?.coding[0]?.display,
+        Type: vital.resource?.code?.coding?.[0]?.display,
         Date: vital.resource?.effectiveDateTime,
         temperature: vital.resource?.valueQuantity?.value,
       };
@@ -45,27 +45,29 @@ export function formatReports(report: any) {
   return {
     id: report.resource?.id,
     status: report.resource?.status,
-    category: report.resource?.category[0]?.text,
+    category: report.resource?.category?.[0]?.text,
     code: report.resource?.code?.text,
     effectiveDateTime: report.resource?.effectiveDateTime,
     value: report.resource?.valueQuantity?.value,
     unit: report.resource?.valueQuantity?.unit,
-    referenceRange: report.resource?.referenceRange[0]?.text,
+    referenceRange: report.resource?.referenceRange?.[0]?.text,
   };
 }
 
 export function formatAllergies(allergy: any) {
   return {
     id: allergy.resource?.id,
-    clinicalStatus: allergy.resource?.clinicalStatus?.coding[0]?.display,
-    verificationStatus: allergy.resource?.verificationStatus?.coding[0]?.display,
+    clinicalStatus: allergy.resource?.clinicalStatus?.coding?.[0]?.display,
+    verificationStatus:
+      allergy.resource?.verificationStatus?.coding?.[0]?.display,
     category: allergy.resource?.category?.join(", ") || "Not Specified",
     criticality: allergy.resource?.criticality,
     code: allergy.resource?.code?.text,
     onsetPeriod: JSON.stringify(allergy.resource?.onsetPeriod),
-    reaction: allergy.resource?.reaction
-      ?.map((r: any) => r.manifestation[0]?.text)
-      .join(", ") || "No Reactions",
+    reaction:
+      allergy.resource?.reaction
+        ?.map((r: any) => r.manifestation[0]?.text)
+        .join(", ") || "No Reactions",
   };
 }
 
@@ -73,8 +75,39 @@ export function formatMedicalHistory(condition: any) {
   return {
     id: condition.resource?.id,
     verificationStatus: condition.resource?.verificationStatus?.text,
-    category: condition.resource?.category[0]?.text,
+    category: condition.resource?.category?.[0]?.text,
     code: condition.resource?.code?.text,
     subject: condition.resource?.subject?.display,
+  };
+}
+
+export function formatAppointments(appointment: any) {
+  return {
+    id: appointment.resource?.id,
+    status: appointment.resource?.status,
+    description: appointment.resource?.description,
+    start: appointment.resource?.start,
+    end: appointment.resource?.end,
+    created: appointment.resource?.created,
+    lastModified: appointment.resource?.meta?.lastUpdated,
+    serviceType:
+      appointment.resource?.serviceType?.map((st: any) => st.text).join(", ") ||
+      "Not Specified",
+    specialty:
+      appointment.resource?.specialty?.map((sp: any) => sp.text).join(", ") ||
+      "Not Specified",
+    appointmentType:
+      appointment.resource?.appointmentType?.text || "Not Specified",
+    reasonCode:
+      appointment.resource?.reasonCode?.map((rc: any) => rc.text).join(", ") ||
+      "Not Specified",
+    participant:
+      appointment.resource?.participant?.map((p: any) => ({
+        type: p.type?.map((t: any) => t.text).join(", ") || "Not Specified",
+        actor: p.actor?.display || "Unknown",
+        required: p.required || "Unknown",
+        status: p.status || "Unknown",
+      })) || [],
+    comment: appointment.resource?.comment || "No comments",
   };
 }

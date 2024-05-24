@@ -4,7 +4,8 @@
   background-color: #f0f0f0;
 }
 
-.auth-container, .container {
+.auth-container,
+.container {
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;

@@ -5,6 +5,7 @@ import {
   formatAllergies,
   formatMedicalHistory,
   formatPatientInfo,
+  formatAppointments,
 } from "./formatters"; // Import the formatting functions
 
 function removeAndRedirect() {
@@ -16,6 +17,7 @@ function removeAndRedirect() {
 
 function handleError(error: any) {
   if (axios.isAxiosError(error) && error.response?.status === 401) {
+    console.log("Unauthorized. Redirecting to login page.");
     removeAndRedirect();
   } else {
     console.error("API Error:", error.response || error.message || error);
@@ -127,6 +129,29 @@ export const getPatientMedicalHistory = async (
       medicalHistory.data.total === 0
         ? []
         : medicalHistory.data.entry.map(formatMedicalHistory)
+    );
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getPatientAppointments = async (
+  patientId: string,
+  accessToken: string,
+  setAppointments: any
+) => {
+  try {
+    setAppointments(null);
+    const config = {
+      method: "get",
+      url: `https://fhir.epic.com/interconnect-fhir-oauth/api/FHIR/R4/Appointment?patient=${patientId}`,
+      headers: { Authorization: `Bearer ${accessToken}` },
+    };
+    const appointments = await axios(config);
+    setAppointments(
+      appointments.data.total === 0
+        ? []
+        : appointments.data.entry.map(formatAppointments)
     );
   } catch (error) {
     handleError(error);
